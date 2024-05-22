@@ -17,6 +17,7 @@ class AddColumnToUsersTable extends Migration
             $table->string('phone_number')->nullable();
             $table->string('address')->nullable();
             $table->string('role')->nullable();
+            $table->string('ative')->nullable();
         });
     }
 
@@ -31,6 +32,7 @@ class AddColumnToUsersTable extends Migration
             $table->dropColumn('phone_number');
             $table->dropColumn('address');
             $table->dropColumn('role');
+            $table->string('active')->nullable();
         });
     }
 }
