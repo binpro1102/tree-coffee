@@ -40,10 +40,14 @@ Route::put('articles/{article}', 'App\Http\Controllers\ArticleController@update'
 Route::delete('articles/{article}', 'App\Http\Controllers\ArticleController@delete');
 
 
-Route::get('blog/list', 'App\Http\Controllers\BlogController@index');
+Route::get('blog/list', 'App\Http\Controllers\BlogController@list');
+
 Route::get('blog/{blog_id}', 'App\Http\Controllers\BlogController@get');
+
 Route::post('blog/create', 'App\Http\Controllers\BlogController@store');
-Route::delete('blog/delete/{blog_id}', 'App\Http\Controllers\BlogController@delete');
 
 Route::put('blog/{blog_id}', 'App\Http\Controllers\BlogController@update');
+
+Route::delete('blog/{blog_id}', 'App\Http\Controllers\BlogController@delete');
+
 
