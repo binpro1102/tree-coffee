@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProductCategoryTable extends Migration
+class DropTableBillBillDetailPayment extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,9 @@ class CreateProductCategoryTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_category', function (Blueprint $table) {
-            $table->id('category_id');
-            $table->string('name');
-            $table->string('img');
-            $table->timestamps();
-
-
-        });
+        Schema::drop('payment');
+        Schema::drop('bill_detail');
+        Schema::drop('bill');
     }
 
     /**
@@ -30,6 +25,8 @@ class CreateProductCategoryTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_category');
+        Schema::dropIfExists('payment');
+        Schema::dropIfExists('bill_detail');
+        Schema::dropIfExists('bill');
     }
 }
