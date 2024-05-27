@@ -15,7 +15,7 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('login');
+            abort(response()->json(["status"=> "Failed", "message" => "Bạn vui lòng đăng nhập"], 403));
         }
     }
 }
