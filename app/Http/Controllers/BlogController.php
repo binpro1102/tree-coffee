@@ -9,6 +9,11 @@ use App\Services\PayUService;
 
 class BlogController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     //lấy all  danh  sách
     public function list()
     {
@@ -119,7 +124,7 @@ class BlogController extends Controller
 
 
 
-   public function delete($blog_id)
+    public function delete($blog_id)
     {
 
         try {
