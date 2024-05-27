@@ -26,7 +26,7 @@ class BlogController extends Controller
             $blog = Blog::paginate($pageSize, ['*'], 'page', $pageNumber);
 
             return response()->json([
-                'status' => 'success',
+                'status' => 'OK',
                 'message' => 'lấy danh sách blog thành công',
                 'data' => $blog
             ], 200);
@@ -49,7 +49,7 @@ class BlogController extends Controller
             $blog = Blog::where('blog_id', $request->blog_id)->firstOrFail();
 
             return response()->json([
-                'status' => 'success',
+                'status' => 'OK',
                 'message' => 'Lấy dữ liệu blog từ id thành công',
                 'data' => $blog
             ], 200);
@@ -79,7 +79,7 @@ class BlogController extends Controller
             ]);
             $blog = blog::create($request->all());
             return response()->json([
-                'status' => 'success',
+                'status' => 'OK',
                 'data' => $blog,
                 "message" => 'thêm  bài viết thành công'
             ], 201);
@@ -109,7 +109,7 @@ class BlogController extends Controller
             $blog = Blog::findOrFail($blog_id);
             $blog->update($request->all());
 
-            return response()->json(['status' => 'success', 'data' => $blog, "message" => 'Cập nhật bài viết thành công'], 200);
+            return response()->json(['status' => 'OK', 'data' => $blog, "message" => 'Cập nhật bài viết thành công'], 200);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -132,7 +132,7 @@ class BlogController extends Controller
             $blog->delete();
 
             return response()->json([
-                'status' => 'success',
+                'status' => 'OK',
                 'message' => 'Bài viết đã được xóa thành công.',
                 'data' => []
             ], 200);
