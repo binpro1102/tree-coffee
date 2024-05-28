@@ -32,7 +32,7 @@ class BlogController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'failed',
+                'status' => 'Failed',
                 'message' => ' lấy danh sách blog không thành công: ' . $e->getMessage(),
                 'data' => []
             ], 400);
@@ -56,7 +56,7 @@ class BlogController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'failed',
+                'status' => 'Failed',
                 'message' => 'Không tìm thấy blog với id này: ' . $e->getMessage(),
                 'data' => null
             ], 404);
@@ -86,7 +86,7 @@ class BlogController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'failed',
+                'status' => 'Failed',
                 'message' => 'thêm bài viết không thành công: ' . $e->getMessage(),
                 'data' => null
             ], 411);
@@ -113,7 +113,7 @@ class BlogController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'failed',
+                'status' => 'Failed',
                 'message' => 'cập nhật bài viết không thành công: ' . $e->getMessage(),
                 'data' => null
             ], 411);
@@ -139,7 +139,7 @@ class BlogController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'failed',
+                'status' => 'Failed',
                 'message' => 'không tìm thấy id trong cơ sở dữ liệu: ' . $e->getMessage(),
                 'data' => null
             ], 411);
