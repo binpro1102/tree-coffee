@@ -28,29 +28,6 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    // public function login(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'email' => 'required|email',
-    //         'password' => 'required|string|min:6',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 422);
-    //     }
-
-    //     if (!$token = auth()->attempt($validator->validated())) {
-    //         return response()->json(['error' => 'Either email or password is wrong.'], 401);
-    //     }
-
-    //     return $this->createNewToken($token);
-
-
-
-
-
-
-    // }
 
     public function login(Request $request)
     {
@@ -73,7 +50,7 @@ class AuthController extends Controller
             }
 
             return $this->createNewToken($token);
-        }  catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'Failed',
                 'message' => 'Lỗi hệ thống. vui Lòng thử lại sau',
@@ -100,13 +77,14 @@ class AuthController extends Controller
                 'name' => 'required|string|between:2,100',
                 'email' => 'required|string|email|max:100|unique:users',
                 'password' => 'required|string|confirmed|min:6',
+
             ]);
 
 
             $user = User::create(
                 array_merge(
                     $validator->validated(),
-                    ['password' => bcrypt($request->password)]
+                    ['password' => bcrypt($request->password), 'role' => 'MEMBER']
                 )
             );
             $token = auth()->login($user);
