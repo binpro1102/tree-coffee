@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Role;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 
 class AuthController extends Controller
 {
@@ -26,23 +28,63 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    // public function login(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'email' => 'required|email',
+    //         'password' => 'required|string|min:6',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json($validator->errors(), 422);
+    //     }
+
+    //     if (!$token = auth()->attempt($validator->validated())) {
+    //         return response()->json(['error' => 'Either email or password is wrong.'], 401);
+    //     }
+
+    //     return $this->createNewToken($token);
+
+
+
+
+
+
+    // }
+
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required|string|min:6',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
+
+            if (!$token = auth()->attempt($validator->validated())) {
+                return response()->json([
+                    'status' => 'OK',
+                    'error' => 'email hoặc mật khẩu không đúng.',
+                    'data' => []
+                ], 401);
+            }
+
+            return $this->createNewToken($token);
+        }  catch (\Exception $e) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Lỗi hệ thống. vui Lòng thử lại sau',
+                'data' => null
+            ], 500);
         }
-
-        if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Either email or password is wrong.'], 401);
-        }
-
-        return $this->createNewToken($token);
     }
+
+
+
+
 
     /**
      * Register a User.
@@ -51,31 +93,49 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|between:2,100',
+                'email' => 'required|string|email|max:100|unique:users',
+                'password' => 'required|string|confirmed|min:6',
+            ]);
+
+
+            $user = User::create(
+                array_merge(
+                    $validator->validated(),
+                    ['password' => bcrypt($request->password)]
+                )
+            );
+            $token = auth()->login($user);
+
+            return response()->json([
+                'status' => 'OK',
+                'message' => 'đăng ký thành công',
+                'data' => [
+                    $user,
+                    'token' => $this->createNewToken($token)
+                ]
+            ], 201);
+
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'Dữ liệu đầu vào không hợp lệ' . $validator->errors(),
+
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'lỗi hệ thống ',
+                'data' => null
+            ], 411);
         }
 
-        $user = User::create(
-            array_merge(
-                $validator->validated(),
-                [
-                    'password' => bcrypt($request->password),
-                    'role' => 'MEMBER'
-                ]
-            )
-        );
-
-
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
-        ], 201);
     }
 
 
@@ -88,7 +148,11 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'User successfully signed out']);
+        return response()->json([
+            'status' => 'OK',
+            'message' => 'đăng xuất thành công',
+            'data' => []
+        ], 200);
     }
 
     /**
