@@ -13,6 +13,7 @@ class DropTable extends Migration
      */
     public function up()
     {
+        Schema::drop('restaurant_img');
         Schema::drop('payment_method');
     }
 
@@ -23,6 +24,7 @@ class DropTable extends Migration
      */
     public function down()
     {
+        Schema::drop('restaurant_img');
         Schema::drop('payment_method');
     }
 }
