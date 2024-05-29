@@ -8,6 +8,10 @@ use Validator;
 
 class RestaurantController extends Controller
 {
+    public function __construct(){
+        $this->middleware('auth:api');
+    }
+
     public function restaurantList()
     {
         $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
