@@ -34,6 +34,8 @@ Route::group([
     Route::get('user-profile', 'App\Http\Controllers\AuthController@userProfile');
 });
 
+
+
 // CRUD table brands
 Route::get('brand', [BrandController::class, 'brandList']);
 Route::post('brand', [BrandController::class, 'create']);
@@ -61,4 +63,6 @@ Route::post('payment', [PaymentController::class, 'create']);
 Route::get('payment/{id}', [PaymentController::class, 'show']);
 Route::put('payment/{id}', [PaymentController::class, 'update']);
 Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
+
+
 
