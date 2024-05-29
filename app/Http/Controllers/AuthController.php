@@ -38,7 +38,7 @@ class AuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors(), 422);
+                return response()->json($validator->errors(), 400);
             }
 
             if (!$token = auth()->attempt($validator->validated())) {
@@ -78,7 +78,7 @@ class AuthController extends Controller
                 'email' => 'required|string|email|max:100|unique:users',
                 'password' => 'required|string|confirmed|min:6',
                 'address' => 'required',
-                'phone_number' => 'required|regex:/^(\+84|0)\d{9}$/',
+                'phone_number' => 'required|'
             ]);
 
 

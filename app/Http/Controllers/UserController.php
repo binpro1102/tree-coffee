@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     public function updateRole(Request $request, $id)
     {
         try {
@@ -58,7 +62,7 @@ class UserController extends Controller
                 'email' => 'sometimes|string|email|max:100|unique:users,email,' . $user->id,
                 'password' => 'sometimes|string|confirmed|min:6',
                 'address' => 'sometimes|required',
-                'phone_number' => 'sometimes|regex:/^(\+84|0)\d{9}$/',
+                'phone_number' => 'sometimes|required',
             ], $request->all());
 
             // Cập nhật user
