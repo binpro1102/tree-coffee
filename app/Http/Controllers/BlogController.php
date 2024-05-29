@@ -17,11 +17,9 @@ class BlogController extends Controller
     //lấy all  danh  sách
     public function list()
     {
-
-
         try {
             $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
-            $pageSize = 3;                              // Số bản ghi trên mỗi trang
+            $pageSize = 3;
 
             $blog = Blog::paginate($pageSize, ['*'], 'page', $pageNumber);
 
@@ -39,6 +37,30 @@ class BlogController extends Controller
         }
 
 
+    }
+
+    public function search(Request $request)
+    {
+        try {
+            $searchTerm = $request->input('search');
+            $pageNumber = request()->input('page', 1); // lấy trang hiện tại từ url, bắt đầu từ 1
+            $pageSize = 3; // bản ghi 1 trang
+
+            $blogs = Blog::where('title', 'like', '%' . $searchTerm . '%')
+                ->paginate($pageSize, ['*'], 'page', $pageNumber);
+
+            return response()->json([
+                'status' => 'OK',
+                'message' => 'tìm kiếm thành công',
+                'data' => $blogs
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'Failed',
+                'message' => 'tìm kiếm không thành công: ' . $e->getMessage(),
+                'data' => []
+            ], 400);
+        }
     }
 
     // lấy 1

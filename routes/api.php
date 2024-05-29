@@ -41,12 +41,13 @@ Route::delete('articles/{article}', 'App\Http\Controllers\ArticleController@dele
 
 
 Route::get('blog/list', 'App\Http\Controllers\BlogController@list');
+Route::get('blog/search', 'App\Http\Controllers\BlogController@search');
 
 Route::get('blog/{blog_id}', 'App\Http\Controllers\BlogController@get');
 
 Route::post('blog/create', 'App\Http\Controllers\BlogController@store');
 
-Route::put('blog/{blog_id}', 'App\Http\Controllers\BlogController@update');
+Route::post('blog/{blog_id}', 'App\Http\Controllers\BlogController@update');
 
 Route::delete('blog/{blog_id}', 'App\Http\Controllers\BlogController@delete');
 
