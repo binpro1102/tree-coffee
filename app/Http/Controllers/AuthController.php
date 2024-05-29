@@ -40,22 +40,13 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 400);
             }
-
             if (!$token = auth()->attempt($validator->validated())) {
-                return response()->json([
-                    'status' => 'OK',
-                    'error' => 'email hoặc mật khẩu không đúng.',
-                    'data' => []
-                ], 401);
+                return $this->responseCommon(401, "email hoặc mật khẩu không đúng.", []);
             }
-
             return $this->createNewToken($token);
+
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'Lỗi hệ thống. vui Lòng thử lại sau',
-                'data' => null
-            ], 500);
+            return $this->responseCommon(500, "Lỗi hệ thống. vui Lòng thử lại sau.", null);
         }
     }
 
@@ -81,7 +72,6 @@ class AuthController extends Controller
                 'phone_number' => 'required|min:11|numeric'
             ]);
 
-
             $user = User::create(
                 array_merge(
                     $validator->validated(),
@@ -91,21 +81,12 @@ class AuthController extends Controller
             // $token = auth()->login($user);
             $token = auth()->attempt($validator->validated());
 
-            return response()->json([
-                'status' => 'OK',
-                'message' => 'đăng ký thành công',
-                'data' => $this->createNewToken($token)
 
-            ], 201);
+            return $this->responseCommon(201, "đăng ký thành công", $this->createNewToken($token));
 
 
-        
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'lỗi hệ thống ',
-                'data' => null
-            ], 500);
+            return $this->responseCommon(500, "Lỗi hệ thống. vui Lòng thử lại sau.", null);
         }
 
     }
@@ -119,12 +100,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-
-        return response()->json([
-            'status' => 'OK',
-            'message' => 'đăng xuất thành công',
-            'data' => []
-        ], 200);
+        return $this->responseCommon(200, "đăng xuất thành công.", []);
     }
 
     /**

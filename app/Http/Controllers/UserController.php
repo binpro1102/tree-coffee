@@ -25,25 +25,14 @@ class UserController extends Controller
             // Update role
             $user->update(['role' => $request->input('role')]);
 
-            return response()->json([
-                'status' => 'OK',
-                'data' => $user,
-                "message" => 'Cập nhật role thành công'
-            ], 200);
+            return $this->responseCommon(200, "Cập nhật role thành công.", $user);
         } catch (ModelNotFoundException $e) {
+
             // Return a 404 response if the user is not found
-            return response()->json([
-                'status' => 'Failed',
-                'data' => null,
-                "message" => 'không  tìm thấy id người dùng'
-            ], 404);
+            return $this->responseCommon(404, "không  tìm thấy id người dùng.", null);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'data' => [],
-                "message" => 'Cập nhật role không thành công, vui lòng thử lại'
-            ], 500);
+            return $this->responseCommon(500, "Cập nhật role không thành công, vui lòng thử lại", []);
         }
     }
 
@@ -54,7 +43,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            // Lấy dữ liệu từ request, chỉ cập nhật trường được yêu cầu
+            // Lấy dữ liệu từ request, chỉ cập nhật trường được yêu cầu, các trường khác giữ nguyên
             $data = $request->only(['name', 'email', 'password', 'address', 'phone_number',]);
 
             $request->validate([
@@ -68,25 +57,14 @@ class UserController extends Controller
             // Cập nhật user
             $user->update($data);
 
-            return response()->json([
-                'status' => 'OK',
-                'data' => $user,
-                "message" => 'Cập nhật thành công'
-            ], 200);
+
+            return $this->responseCommon(200, "Cập nhật data thành công.", $user);
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'data' => null,
-                "message" => 'không  tìm thấy id người dùng'
-            ], 404);
+
+            return $this->responseCommon(404, "không  tìm thấy id người dùng", null);
 
         } catch (\Exception $e) {
-
-            return response()->json([
-                'status' => 'Failed',
-                'data' => [],
-                "message" => 'Cập nhật không thành công, vui lòng thử lại'
-            ], 500);
+            return $this->responseCommon(500, "Cập nhật không thành công, vui lòng thử lại", []);
         }
     }
 

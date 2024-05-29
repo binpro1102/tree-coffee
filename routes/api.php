@@ -34,17 +34,8 @@ Route::group([
     Route::get('user-profile', 'App\Http\Controllers\AuthController@userProfile');
 });
 
-<<<<<<< HEAD
-Route::get('articles', 'App\Http\Controllers\ArticleController@index');
-Route::get('articles/{article}', 'App\Http\Controllers\ArticleController@show');
-Route::post('articles', 'App\Http\Controllers\ArticleController@store');
-Route::put('articles/{article}', 'App\Http\Controllers\ArticleController@update');
-Route::delete('articles/{article}', 'App\Http\Controllers\ArticleController@delete');
 
-// user/update role
-Route::post('/users/{id}/update-role', 'App\Http\Controllers\UserController@updateRole');
-Route::post('/users/{id}', 'App\Http\Controllers\UserController@update');
-=======
+
 // CRUD table brands
 Route::get('brand', [BrandController::class, 'brandList']);
 Route::post('brand', [BrandController::class, 'create']);
@@ -73,4 +64,5 @@ Route::get('payment/{id}', [PaymentController::class, 'show']);
 Route::put('payment/{id}', [PaymentController::class, 'update']);
 Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
->>>>>>> main
+
+
