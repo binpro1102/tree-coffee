@@ -78,7 +78,7 @@ class AuthController extends Controller
                 'email' => 'required|string|email|max:100|unique:users',
                 'password' => 'required|string|confirmed|min:6',
                 'address' => 'required',
-                'phone_number' => 'required|'
+                'phone_number' => 'required|min:11|numeric'
             ]);
 
 
@@ -88,31 +88,24 @@ class AuthController extends Controller
                     ['password' => bcrypt($request->password), 'role' => 'MEMBER']
                 )
             );
-            $token = auth()->login($user);
+            // $token = auth()->login($user);
+            $token = auth()->attempt($validator->validated());
 
             return response()->json([
                 'status' => 'OK',
                 'message' => 'đăng ký thành công',
-                'data' => [
-                    $user,
-                    'token' => $this->createNewToken($token)
-                ]
+                'data' => $this->createNewToken($token)
+
             ], 201);
 
 
-        } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'Dữ liệu đầu vào không hợp lệ' . $validator->errors(),
-
-                'errors' => $e->errors()
-            ], 422);
+        
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'Failed',
                 'message' => 'lỗi hệ thống ',
                 'data' => null
-            ], 411);
+            ], 500);
         }
 
     }
