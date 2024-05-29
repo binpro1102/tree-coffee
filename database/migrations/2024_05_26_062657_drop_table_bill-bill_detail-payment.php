@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnRoleToTblUsers extends Migration
+class DropTableBillBillDetailPayment extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddColumnRoleToTblUsers extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role');
-        });
+        Schema::drop('payment');
+        Schema::drop('bill_detail');
+        Schema::drop('bill');
     }
 
     /**
@@ -25,8 +25,8 @@ class AddColumnRoleToTblUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        Schema::dropIfExists('payment');
+        Schema::dropIfExists('bill_detail');
+        Schema::dropIfExists('bill');
     }
 }
