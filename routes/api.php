@@ -35,3 +35,7 @@ Route::get('articles/{article}', 'App\Http\Controllers\ArticleController@show');
 Route::post('articles', 'App\Http\Controllers\ArticleController@store');
 Route::put('articles/{article}', 'App\Http\Controllers\ArticleController@update');
 Route::delete('articles/{article}', 'App\Http\Controllers\ArticleController@delete');
+
+// user/update role
+Route::post('/users/{id}/update-role', 'App\Http\Controllers\UserController@updateRole');
+Route::post('/users/{id}', 'App\Http\Controllers\UserController@update');
