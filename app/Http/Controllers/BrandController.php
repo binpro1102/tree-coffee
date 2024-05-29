@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Brand;
-use Exception;
+use Validator;
 use Illuminate\Http\Request;
 
 class BrandController extends Controller
@@ -16,66 +17,51 @@ class BrandController extends Controller
     {
         $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
         $pageSize = 5;                              // Số bản ghi trên mỗi trang
-        $brands = Brand::paginate($pageSize, ['*'], 'page', $pageNumber);
-        try{
-            return response()->json([
-            'status' => 'Oke',
-            'message' => 'Success',
-            'data' => $brands
-        ],200);
-        }catch(Exception $e){
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'Không tìm thấy danh sách brands',
-                'data' => $brands
-            ],400);
-        }
+        $data = Brand::paginate($pageSize, ['*'], 'page', $pageNumber);
+        return $this->responseCommon(200,"Lấy danh sách thành công",$data);
     }
 
     public function create(Request $request)
     {
-        $brands = Brand::create($request->all());
-        return response()->json([
-            'status' => 'Oke',
-            'message' => 'Create success',
-            'data' => $brands
-        ],200);
+        $rules = $this->validateBrand();// Kiểm tra validate
+        $alert = $this->alert();// Nếu có lỗi thì thông báo
+        $validator = Validator::make($request->all(), $rules, $alert);
+        if ($validator->fails()) {
+            return $validator->errors();
+        } else {
+            // Nếu không thì trả lại dữ liệu cho người dùng đã thêm
+            $data = Brand::create($request->all());
+            return $this->responseCommon(200,"Thêm brand thành công",$data);
+        }
     }
 
     public function show(string $id)
     {
-        $brands = Brand::find($id);
-        if(!$brands){
-            return response()->json([
-            'status' => 'Failed',
-            'message' => 'Không tìm thấy',
-            'data' => [],
-        ]);
-            
+        $data = Brand::find($id);
+        if(!$data){
+            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
-        return response()->json([
-            'status' => 'Oke',
-            'message' => 'Success',
-            'data' => $brands
-        ]);
+        return $this->responseCommon(200,"Tìm thấy ID thành công",$data);
     }
 
     public function update(Request $request, string $id)
     {
-        $brands = Brand::find($id);
-        if(!$brands){
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'Không tìm thấy id để sửa',
-                'data' => [],
-                ]);
+        // Tìm ID xem trong database có tồn tại không
+        $data = Brand::find($id);
+        if (!$data) {
+            // Nếu không tồn tại thì trả lỗi
+            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
-        $brands->update($request->all());
-        return response()->json([
-            'status' => 'Oke',
-            'message' => 'Update success',
-            'data' => $brands
-        ]);
+        $rules = $this->validateBrand();    // Kiểm tra validate
+        $alert = $this->alert();            // Nếu có lỗi thì thông báo
+        $validator = Validator::make($request->all(), $rules, $alert);
+        if ($validator->fails()) {
+            return $validator->errors();
+        } else {
+            // Nếu không thì trả lại dữ liệu cho người dùng đã sửa
+            $data->update($request->all());
+            return $this->responseCommon(200,"Cập nhật thành công",$data);
+        } 
     }
 
     /**
@@ -83,18 +69,11 @@ class BrandController extends Controller
      */
     public function destroy(string $id)
     {
-        $brands = Brand::find($id);
-        if(!$brands){
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'Không tìm thấy id để xóa',
-                'data' => []
-            ]);
+        $data = Brand::find($id);
+        if(!$data){
+            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
-        $brands -> delete();
-        return response()->json([
-            'status' => 'Oke',
-            'message' => 'Delete success',
-        ]);
+        $data->delete();
+        return $this->responseCommon(200,"Xóa thành công",[]);
     }
 }
