@@ -41,6 +41,7 @@ class BlogController extends Controller
 
     public function search(Request $request)
     {
+
         try {
             $searchTerm = $request->input('search');
             $pageNumber = request()->input('page', 1); // lấy trang hiện tại từ url, bắt đầu từ 1
@@ -49,11 +50,14 @@ class BlogController extends Controller
             $blogs = Blog::where('title', 'like', '%' . $searchTerm . '%')
                 ->paginate($pageSize, ['*'], 'page', $pageNumber);
 
+
             return response()->json([
                 'status' => 'OK',
                 'message' => 'tìm kiếm thành công',
                 'data' => $blogs
             ], 200);
+
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'Failed',
