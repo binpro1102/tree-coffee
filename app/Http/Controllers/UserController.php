@@ -43,7 +43,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            // Lấy dữ liệu từ request, chỉ cập nhật trường được yêu cầu, các trường khác giữ nguyên
+            // Lấy dữ liệu từ request, cập nhật trường được yêu cầu, các trường còn lại giữ nguyên
             $data = $request->only(['name', 'email', 'password', 'address', 'phone_number',]);
 
             $request->validate([

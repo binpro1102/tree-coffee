@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use GrahamCampbell\ResultType\Success;
-use Illuminate\Http\Request;
 use App\Models\blog;
+use Illuminate\Http\Request;
 use App\Services\PayUService;
+use GrahamCampbell\ResultType\Success;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BlogController extends Controller
 {
@@ -23,17 +24,10 @@ class BlogController extends Controller
 
             $blog = Blog::paginate($pageSize, ['*'], 'page', $pageNumber);
 
-            return response()->json([
-                'status' => 'OK',
-                'message' => 'lấy danh sách blog thành công',
-                'data' => $blog
-            ], 200);
+            return $this->responseCommon(200, "Lấy danh sách blog thành công", $blog);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => ' lấy danh sách blog không thành công: ' . $e->getMessage(),
-                'data' => []
-            ], 400);
+
+            return $this->responseCommon(400, "lấy danh sách blog không thành công", []);
         }
 
 
@@ -47,23 +41,14 @@ class BlogController extends Controller
             $pageNumber = request()->input('page', 1); // lấy trang hiện tại từ url, bắt đầu từ 1
             $pageSize = 3; // bản ghi 1 trang
 
-            $blogs = Blog::where('title', 'like', '%' . $searchTerm . '%')
+            $blog = Blog::where('title', 'like', '%' . $searchTerm . '%')
                 ->paginate($pageSize, ['*'], 'page', $pageNumber);
 
-
-            return response()->json([
-                'status' => 'OK',
-                'message' => 'tìm kiếm thành công',
-                'data' => $blogs
-            ], 200);
+            return $this->responseCommon(200, "tìm kiếm thành công", $blog);
 
 
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'tìm kiếm không thành công: ' . $e->getMessage(),
-                'data' => []
-            ], 400);
+            return $this->responseCommon(500, "lỗi hệ thống. Xin vui lòng thử lại", []);
         }
     }
 
@@ -74,21 +59,18 @@ class BlogController extends Controller
         try {
             $blog = Blog::where('blog_id', $request->blog_id)->firstOrFail();
 
-            return response()->json([
-                'status' => 'OK',
-                'message' => 'Lấy dữ liệu blog từ id thành công',
-                'data' => $blog
-            ], 200);
 
+            return $this->responseCommon(200, "Lấy dữ liệu blog từ id thành công", $blog);
+
+        } catch (ModelNotFoundException $e) {
+
+            // Return a 404 response if the user is not found
+            return $this->responseCommon(404, "không  tìm thấy id này trong cơ sở dữ liệu.", null);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'Không tìm thấy blog với id này: ' . $e->getMessage(),
-                'data' => null
-            ], 404);
+
+            return $this->responseCommon(500, "Cập nhật role không thành công, vui lòng thử lại", []);
         }
     }
-
 
     // tạo mới
 
@@ -104,18 +86,11 @@ class BlogController extends Controller
                 'highlight' => 'required'
             ]);
             $blog = blog::create($request->all());
-            return response()->json([
-                'status' => 'OK',
-                'data' => $blog,
-                "message" => 'thêm  bài viết thành công'
-            ], 201);
+
+            return $this->responseCommon(201, "thêm  bài viết thành công", $blog);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'thêm bài viết không thành công: ' . $e->getMessage(),
-                'data' => null
-            ], 411);
+            return $this->responseCommon(400, "thêm bài viết không thành công", null);
         }
 
     }
@@ -135,19 +110,13 @@ class BlogController extends Controller
             $blog = Blog::findOrFail($blog_id);
             $blog->update($request->all());
 
-            return response()->json(['status' => 'OK', 'data' => $blog, "message" => 'Cập nhật bài viết thành công'], 200);
-
+            return $this->responseCommon(200, "Cập nhật bài viết thành công", $blog);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'cập nhật bài viết không thành công: ' . $e->getMessage(),
-                'data' => null
-            ], 411);
+
+            return $this->responseCommon(400, "Cập nhật bài viết không thành công", null);
         }
 
     }
-
-
 
 
     public function delete($blog_id)
@@ -157,20 +126,13 @@ class BlogController extends Controller
             $blog = blog::findOrFail($blog_id);
             $blog->delete();
 
-            return response()->json([
-                'status' => 'OK',
-                'message' => 'Bài viết đã được xóa thành công.',
-                'data' => []
-            ], 200);
+
+            return $this->responseCommon(200, "Bài viết đã được xóa thành công.", []);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'không tìm thấy id trong cơ sở dữ liệu: ' . $e->getMessage(),
-                'data' => null
-            ], 411);
-        }
 
+            return $this->responseCommon(404, "không tìm thấy id trong cơ sở dữ liệu.", null);
+        }
     }
 
 }
