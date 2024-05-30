@@ -6,6 +6,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\Models\Role;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 
 class AuthController extends Controller
 {
@@ -17,7 +20,9 @@ class AuthController extends Controller
      */
     public function __construct()
     {
+
         $this->middleware('auth:api', ['except' => ['login', 'register',]]);
+
     }
 
     /**
@@ -25,23 +30,33 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
+
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required|string|min:6',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+            if (!$token = auth()->attempt($validator->validated())) {
+                return $this->responseCommon(401, "email hoặc mật khẩu không đúng.", []);
+            }
+            return $this->createNewToken($token);
+
+        } catch (\Exception $e) {
+            return $this->responseCommon(500, "Lỗi hệ thống. vui Lòng thử lại sau.", null);
         }
 
-        if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Either email or password is wrong.'], 401);
-        }
-
-        return $this->createNewToken($token);
     }
+
+
+
+
 
     /**
      * Register a User.
@@ -53,39 +68,31 @@ class AuthController extends Controller
 
         try {
 
+
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|between:2,100',
                 'email' => 'required|string|email|max:100|unique:users',
                 'password' => 'required|string|confirmed|min:6',
+                'address' => 'required',
+                'phone_number' => 'required|min:11|numeric'
             ]);
-
 
             $user = User::create(
                 array_merge(
                     $validator->validated(),
-                    ['password' => bcrypt($request->password)]
+                    ['password' => bcrypt($request->password), 'role' => 'MEMBER']
                 )
             );
-            $token = auth()->login($user);
+            // $token = auth()->login($user);
+            $token = auth()->attempt($validator->validated());
 
-            return response()->json([
-                'status' => 'OK',
-                'message' => 'đăng ký thành công',
-                'data' => [
-                    $user,
-                    'token' => $this->createNewToken($token)
-                ]
-            ], 201);
+
+            return $this->responseCommon(201, "đăng ký thành công", $this->createNewToken($token));
 
 
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Failed',
-                'message' => 'đăng ký không thành công: ' . $validator->errors(),
-                'data' => null
-            ], 411);
+            return $this->responseCommon(500, "Lỗi hệ thống. vui Lòng thử lại sau.", null);
         }
-
     }
 
 
@@ -97,8 +104,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-
-        return response()->json(['message' => 'User successfully signed out']);
+        return $this->responseCommon(200, "đăng xuất thành công.", []);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BrandController;
 
 
 /*
@@ -34,6 +35,18 @@ Route::group([
 
 });
 
+
+
+// CRUD table brands
+Route::get('brand', [BrandController::class, 'brandList']);
+Route::post('brand', [BrandController::class, 'create']);
+Route::get('brand/{id}', [BrandController::class, 'show']);
+Route::put('brand/{id}', [BrandController::class, 'update']);
+Route::delete('brand/{id}', [BrandController::class, 'destroy']);
+
+
+ Route::post('users/update-role', 'App\Http\Controllers\UserController@updateRole');
+ Route::post('users', 'App\Http\Controllers\UserController@update');
 
 
 

@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Validator;
 class RestaurantImageController extends Controller
 {
+    public function __construct(){
+        $this->middleware('auth:api');
+    }
+
     public function RestaurantImageList(){
         $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
         $pageSize = 5;                              // Số bản ghi trên mỗi trang

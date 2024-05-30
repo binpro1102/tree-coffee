@@ -12,15 +12,16 @@ class UserController extends Controller
     {
         $this->middleware('auth:api');
     }
-    public function updateRole(Request $request, $id)
+    public function updateRole(Request $request)
     {
         try {
             $request->validate([
+                'id' => 'required|exists:users,id',
                 'role' => 'required',
             ]);
 
             // tìm id
-            $user = User::findOrFail($id);
+            $user = User::findOrFail($request->input('id'));
 
             // Update role
             $user->update(['role' => $request->input('role')]);
@@ -38,23 +39,25 @@ class UserController extends Controller
 
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         try {
-            $user = User::findOrFail($id);
 
-            // Lấy dữ liệu từ request, cập nhật trường được yêu cầu, các trường còn lại giữ nguyên
-            $data = $request->only(['name', 'email', 'password', 'address', 'phone_number',]);
+
+            // Lấy dữ liệu từ request, chỉ cập nhật trường được yêu cầu, các trường khác giữ nguyên
+            $data = $request->only(['id', 'name', 'email', 'password', 'address', 'phone_number',]);
 
             $request->validate([
+                'id' => 'required|integer',
                 'name' => 'sometimes|string|between:2,100',
-                'email' => 'sometimes|string|email|max:100|unique:users,email,' . $user->id,
+                'email' => 'sometimes|string|email|max:100|unique:users,email, {{$data["id"]}}',
                 'password' => 'sometimes|string|confirmed|min:6',
                 'address' => 'sometimes|required',
-                'phone_number' => 'sometimes|required',
+                'phone_number' => 'sometimes|required|numeric',
             ], $request->all());
 
             // Cập nhật user
+            $user = User::findOrFail($data['id']);
             $user->update($data);
 
 
