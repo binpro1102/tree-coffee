@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\RestaurantImageController;
 
 
 /*
@@ -35,7 +38,9 @@ Route::group([
 
 });
 
-
+// user
+Route::post('users/update-role', 'App\Http\Controllers\UserController@updateRole');
+Route::post('users', 'App\Http\Controllers\UserController@update');
 
 // CRUD table brands
 Route::get('brand', [BrandController::class, 'brandList']);
@@ -45,8 +50,30 @@ Route::put('brand/{id}', [BrandController::class, 'update']);
 Route::delete('brand/{id}', [BrandController::class, 'destroy']);
 
 
- Route::post('users/update-role', 'App\Http\Controllers\UserController@updateRole');
- Route::post('users', 'App\Http\Controllers\UserController@update');
+
+
+
+
+// // CRUD table restaurant
+Route::get('restaurant', [RestaurantController::class, 'restaurantList']);
+Route::post('restaurant', [RestaurantController::class, 'create']);
+Route::get('restaurant/{id}', [RestaurantController::class, 'show']);
+Route::put('restaurant/{id}', [RestaurantController::class, 'update']);
+Route::delete('restaurant/{id}', [RestaurantController::class, 'destroy']);
+
+// // CRUD table restaurant_image
+Route::get('restaurant_img', [RestaurantImageController::class, 'RestaurantImageList']);
+Route::post('restaurant_img', [RestaurantImageController::class, 'create']);
+Route::get('restaurant_img/{id}', [RestaurantImageController::class, 'show']);
+Route::put('restaurant_img/{id}', [RestaurantImageController::class, 'update']);
+Route::delete('restaurant_img/{id}', [RestaurantImageController::class, 'destroy']);
+
+// CRUD table payment
+Route::get('payment', [PaymentController::class, 'paymentList']);
+Route::post('payment', [PaymentController::class, 'create']);
+Route::get('payment/{id}', [PaymentController::class, 'show']);
+Route::put('payment/{id}', [PaymentController::class, 'update']);
+Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
 
 
