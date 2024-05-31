@@ -56,6 +56,20 @@ class Controller extends BaseController
         ];
     }
 
+    public function validateOrder()
+    {
+        return [
+        'user_id' => 'required',
+        'order_date' => 'required',
+        'total_price' => 'required',
+        'shipping_address' => 'required',
+        'note' => 'required',
+        'total_discount' => 'required',
+        'sub_total' => 'required',
+        'status'=> 'required'
+        ];
+    }
+
     public function alert()
     {
         return [

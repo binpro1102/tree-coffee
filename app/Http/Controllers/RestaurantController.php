@@ -69,6 +69,6 @@ class RestaurantController extends Controller
             return $this->responseCommonFailed(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
         $data->delete();
-        return $this->responseCommon(200,"Success","Delete success");
+        return $this->responseCommon(200,"Xóa thành công",[]);
     }
 }
