@@ -63,7 +63,7 @@ Route::get('payment/{id}', [PaymentController::class, 'show']);
 Route::put('payment/{id}', [PaymentController::class, 'update']);
 Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
-// CRUD table payment
+// CRUD table order
 Route::get('order', [OrderController::class, 'orderList']);
 Route::post('order', [OrderController::class, 'create']);
 Route::get('order/{id}', [OrderController::class, 'show']);
