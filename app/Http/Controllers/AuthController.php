@@ -20,7 +20,9 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+
+        $this->middleware('auth:api', ['except' => ['login', 'register',]]);
+
     }
 
     /**
@@ -28,6 +30,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
 
     public function login(Request $request)
     {
@@ -48,6 +51,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return $this->responseCommon(500, "Lỗi hệ thống. vui Lòng thử lại sau.", null);
         }
+
     }
 
 
@@ -63,6 +67,7 @@ class AuthController extends Controller
     {
 
         try {
+
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|between:2,100',
@@ -88,7 +93,6 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return $this->responseCommon(500, "Lỗi hệ thống. vui Lòng thử lại sau.", null);
         }
-
     }
 
 
