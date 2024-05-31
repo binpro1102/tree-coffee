@@ -76,4 +76,15 @@ Route::put('payment/{id}', [PaymentController::class, 'update']);
 Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
 
+// CRUD table product
+Route::get('product/list', 'App\Http\Controllers\ProductController@list');
+Route::get('product/search', 'App\Http\Controllers\ProductController@search');
+Route::get('product', 'App\Http\Controllers\ProductController@get');
+Route::post('product/create', 'App\Http\Controllers\ProductController@store');
+Route::post('product/update', 'App\Http\Controllers\ProductController@update');
+Route::delete('product', 'App\Http\Controllers\ProductController@delete');
+
+
+
+
 
