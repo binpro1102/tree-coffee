@@ -33,7 +33,8 @@ class OrderController extends Controller
         }
     }
 
-    public function show(string $id){
+    public function show(Request $request){
+        $id=$request->order_id;
         $data = Order::find($id);
         if(!$data){
             return $this->responseCommon(400,"ID không tìm thấy hoặc đã bị xóa",[]);
@@ -41,7 +42,8 @@ class OrderController extends Controller
         return $this->responseCommon(200,"Tìm thấy thành công",$data);
     }
 
-    public function update(Request $request,string $id){
+    public function update(Request $request){
+        $id=$request->order_id;
         $data = Order::find($id);
         if(!$data){
             // Nếu không tồn tại thì trả lỗi
@@ -59,7 +61,8 @@ class OrderController extends Controller
         }
     }
 
-    public function destroy(string $id){
+    public function destroy(Request $request){
+        $id=$request->order_id;
         $data = Order::find($id);
         if(!$data){
             return $this->responseCommonFailed(400,"Không tìm thấy ID hoặc đã bị xóa",[]);

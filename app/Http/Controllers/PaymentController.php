@@ -42,8 +42,9 @@ class PaymentController extends Controller
         
     }
 
-    public function show(string $id)
+    public function show(Request $request)
     {
+        $id=$request->payment_method_id;
         $data = Payment_method::find($id);
         if(!$data){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
@@ -51,8 +52,9 @@ class PaymentController extends Controller
         return $this->responseCommon(200,"Tìm thấy ID thành công",$data);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
+        $id=$request->payment_method_id;
         $data = Payment_method::find($id);
         if (!$data) {
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
@@ -74,8 +76,9 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
+        $id=$request->payment_method_id;
         $data = Payment_method::find($id);
         if(!$data){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
