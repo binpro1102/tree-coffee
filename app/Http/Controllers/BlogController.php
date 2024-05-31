@@ -57,7 +57,7 @@ class BlogController extends Controller
     public function get(Request $request)
     {
         try {
-            $blog = Blog::where('blog_id', $request->blog_id)->firstOrFail();
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
 
 
             return $this->responseCommon(200, "Lấy dữ liệu blog từ id thành công", $blog);
@@ -87,6 +87,7 @@ class BlogController extends Controller
             ]);
             $blog = blog::create($request->all());
 
+
             return $this->responseCommon(201, "thêm  bài viết thành công", $blog);
 
         } catch (\Exception $e) {
@@ -97,7 +98,7 @@ class BlogController extends Controller
 
     // update
 
-    public function update(Request $request, $blog_id)
+    public function update(Request $request)
     {
         try {
             $request->validate([
@@ -107,7 +108,7 @@ class BlogController extends Controller
                 'thumbnail' => 'required',
                 'highlight' => 'required'
             ]);
-            $blog = Blog::findOrFail($blog_id);
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
             $blog->update($request->all());
 
             return $this->responseCommon(200, "Cập nhật bài viết thành công", $blog);
@@ -119,11 +120,11 @@ class BlogController extends Controller
     }
 
 
-    public function delete($blog_id)
+    public function delete(Request $request)
     {
 
         try {
-            $blog = blog::findOrFail($blog_id);
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
             $blog->delete();
 
 
