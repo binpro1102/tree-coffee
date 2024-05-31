@@ -77,4 +77,10 @@ Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
 
 // CRUD table product category
+Route::get('productcategory/list', 'App\Http\Controllers\ProductCategoryController@list');
+Route::get('productcategory/search', 'App\Http\Controllers\ProductCategoryController@search');
+Route::get('productcategory', 'App\Http\Controllers\ProductCategoryController@get');
+Route::post('productcategory/create', 'App\Http\Controllers\ProductCategoryController@store');
+Route::post('productcategory/update', 'App\Http\Controllers\ProductCategoryController@update');
+Route::delete('productcategory', 'App\Http\Controllers\ProductCategoryController@delete');
 
