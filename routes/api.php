@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RestaurantImageController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,7 +34,14 @@ Route::group([
     Route::post('logout', 'App\Http\Controllers\AuthController@logout');
     Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
     Route::get('user-profile', 'App\Http\Controllers\AuthController@userProfile');
+
+
+
 });
+
+// user
+Route::post('users/update-role', 'App\Http\Controllers\UserController@updateRole');
+Route::post('users', 'App\Http\Controllers\UserController@update');
 
 // CRUD table brands
 Route::get('brand', [BrandController::class, 'brandList']);
@@ -41,6 +49,11 @@ Route::post('brand', [BrandController::class, 'create']);
 Route::get('brand/{id}', [BrandController::class, 'show']);
 Route::put('brand/{id}', [BrandController::class, 'update']);
 Route::delete('brand/{id}', [BrandController::class, 'destroy']);
+
+
+
+
+
 
 // // CRUD table restaurant
 Route::get('restaurant', [RestaurantController::class, 'restaurantList']);
@@ -69,3 +82,4 @@ Route::post('order', [OrderController::class, 'create']);
 Route::get('order/{id}', [OrderController::class, 'show']);
 Route::put('order/{id}', [OrderController::class, 'update']);
 Route::delete('order/{id}', [OrderController::class, 'destroy']);
+
