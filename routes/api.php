@@ -75,5 +75,11 @@ Route::get('payment/{id}', [PaymentController::class, 'show']);
 Route::put('payment/{id}', [PaymentController::class, 'update']);
 Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
-
+// CRUD table blog
+Route::get('blog/list', 'App\Http\Controllers\BlogController@list');
+Route::get('blog/search', 'App\Http\Controllers\BlogController@search');
+Route::get('blog', 'App\Http\Controllers\BlogController@get');
+Route::post('blog/create', 'App\Http\Controllers\BlogController@store');
+Route::post('blog/update', 'App\Http\Controllers\BlogController@update');
+Route::delete('blog', 'App\Http\Controllers\BlogController@delete');
 

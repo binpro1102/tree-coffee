@@ -103,7 +103,7 @@ class BlogController extends Controller
         try {
             $request->validate([
                 'user_id' => 'required|exists:users,id',
-                'title' => 'required|string|min:|max:255',
+                'title' => 'required|string|min:5|max:255',
                 'content' => 'required|string|min:10',
                 'thumbnail' => 'required',
                 'highlight' => 'required'
