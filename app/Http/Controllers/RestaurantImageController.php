@@ -31,8 +31,9 @@ class RestaurantImageController extends Controller
         }   
     }
 
-    public function show(string $id)
+    public function show(Request $request)
     {
+        $id=$request->restaurant_img_id;
         $data = Restaurant_image::find($id);
         if(!$data){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
@@ -41,8 +42,9 @@ class RestaurantImageController extends Controller
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
+        $id=$request->restaurant_img_id;
         $data = Restaurant_image::find($id);
         if(!$data){
             // Nếu không tồn tại thì trả lỗi
@@ -63,8 +65,9 @@ class RestaurantImageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
+        $id=$request->restaurant_img_id;
         $data = Restaurant_image::find($id);
         if(!$data){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
