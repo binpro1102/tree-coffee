@@ -51,10 +51,6 @@ Route::put('brand', [BrandController::class, 'update']);
 Route::delete('brand', [BrandController::class, 'destroy']);
 
 
-
-
-
-
 // // CRUD table restaurant
 Route::get('restaurant-list', [RestaurantController::class, 'restaurantList']);
 Route::post('restaurant', [RestaurantController::class, 'create']);
