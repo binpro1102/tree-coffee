@@ -15,7 +15,8 @@ class Product extends Model
         'price',
         'img',
         'code',
-        'unit_price'
+        'unit_price',
+        'is_delete'
     ];
     protected $primaryKey = "product_id";
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProductCategoryController extends Controller

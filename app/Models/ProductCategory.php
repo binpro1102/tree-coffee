@@ -11,7 +11,8 @@ class ProductCategory extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'img'
+        'img',
+        'is_delete'
     ];
     protected $primaryKey = "category_id";
     protected $table = 'product_category';
