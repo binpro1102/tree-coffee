@@ -68,12 +68,6 @@ Route::get('restaurant_img/{id}', [RestaurantImageController::class, 'show']);
 Route::put('restaurant_img/{id}', [RestaurantImageController::class, 'update']);
 Route::delete('restaurant_img/{id}', [RestaurantImageController::class, 'destroy']);
 
-// CRUD table payment
-Route::get('payment', [PaymentController::class, 'paymentList']);
-Route::post('payment', [PaymentController::class, 'create']);
-Route::get('payment/{id}', [PaymentController::class, 'show']);
-Route::put('payment/{id}', [PaymentController::class, 'update']);
-Route::delete('payment/{id}', [PaymentController::class, 'destroy']);
 
 // CRUD table blog
 Route::get('blog/list', 'App\Http\Controllers\BlogController@list');
