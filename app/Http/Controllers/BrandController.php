@@ -35,8 +35,9 @@ class BrandController extends Controller
         }
     }
 
-    public function show(string $id)
+    public function show(Request $request)
     {
+        $id=$request->id;
         $data = Brand::find($id);
         if(!$data){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
@@ -44,9 +45,10 @@ class BrandController extends Controller
         return $this->responseCommon(200,"Tìm thấy ID thành công",$data);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
         // Tìm ID xem trong database có tồn tại không
+        $id=$request->id;
         $data = Brand::find($id);
         if (!$data) {
             // Nếu không tồn tại thì trả lỗi
@@ -67,8 +69,9 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
+        $id=$request->id;
         $data = Brand::find($id);
         if(!$data){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
