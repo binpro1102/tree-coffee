@@ -16,10 +16,10 @@ class BlogController extends Controller
         $this->middleware('auth:api');
     }
     //lấy all  danh  sách
-    public function list()
+    public function list(Request $request)
     {
         try {
-            $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
+            $pageNumber = $request->input('page'); // truyền page từ body { "page": 2}
             $pageSize = 3;
 
             $blog = Blog::paginate($pageSize, ['*'], 'page', $pageNumber);
