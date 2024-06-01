@@ -92,4 +92,7 @@ Route::post('product/create', 'App\Http\Controllers\ProductController@store');
 Route::post('product/update', 'App\Http\Controllers\ProductController@update');
 Route::delete('product', 'App\Http\Controllers\ProductController@delete');
 
+// CRUD table order-detail
+Route::get('order-detail/list', [OrderController::class, 'orderDetailList']);
+
 
