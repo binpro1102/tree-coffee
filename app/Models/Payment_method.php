@@ -10,7 +10,8 @@ class Payment_method extends Model
     use HasFactory;
     protected $fillable = [
         'name',
-        'status'
+        'status',
+        'is_delete'
     ];
 
     protected $primaryKey = "payment_method_id";

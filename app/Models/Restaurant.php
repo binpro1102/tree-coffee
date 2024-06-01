@@ -15,6 +15,7 @@ class Restaurant extends Model
         'phone_number',
         'latitude',
         'longitude',
+        'is_delete'
     ];
     protected $primaryKey = "restaurant_id";
 }

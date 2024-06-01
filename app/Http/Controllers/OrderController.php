@@ -12,11 +12,12 @@ class OrderController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function orderList()
+    public function orderList(Request $request)
     {
-        $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
-        $pageSize = 5;                              // Số bản ghi trên mỗi trang
-        $data = Order::paginate($pageSize, ['*'], 'page', $pageNumber);
+        $pageNumber = request()->input('page', $request->pageNumber); 
+        $pageSize = $request->pageSize;                              
+        $data = Order::where('is_delete', '=', 0)
+        ->paginate($pageSize, ['*'], 'page', $pageNumber);
         return $this->responseCommon(200,"Lấy danh sách thành công",$data);
     }
 
@@ -64,10 +65,12 @@ class OrderController extends Controller
     public function destroy(Request $request){
         $id=$request->order_id;
         $data = Order::find($id);
-        if(!$data){
-            return $this->responseCommonFailed(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+         // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+         if(!$data || $data['is_delete'] === 1){
+            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
-        $data->delete();
+        //Nếu tìm thấy id chưa bị xóa thì thực hiện câu lệnh xóa mềm
+        $data->update(['is_delete' => 1]);
         return $this->responseCommon(200,"Xóa thành công",[]);
     }
 }

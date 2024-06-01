@@ -70,6 +70,20 @@ class Controller extends BaseController
         ];
     }
 
+    public function validatePayment()
+    {
+        return [
+        'name' => 'required|min:5|max:30'
+        ];
+    }
+
+    public function validateOrderDetail(){
+        return [
+            'price' => 'required',
+            'quantity' => 'required',
+            'discount' => 'required'
+        ];
+    }
     public function alert()
     {
         return [

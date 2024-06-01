@@ -11,11 +11,12 @@ class RestaurantImageController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function RestaurantImageList(){
-        $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
-        $pageSize = 5;                              // Số bản ghi trên mỗi trang
-        $data = Restaurant_image::paginate($pageSize, ['*'], 'page', $pageNumber);
-        return $this->responseCommon(200,"Lấy danh sách thành công",$data);
+    public function RestaurantImageList(Request $request){
+        $pageNumber = request()->input('page', $request->pageNumber);
+        $pageSize = $request->pageSize;                              
+        $data = Restaurant_image::where('is_delete', '=', 0)
+        ->paginate($pageSize, ['*'], 'page', $pageNumber);
+        return $this->responseCommon(200, "Lấy danh sách thành công", $data); 
     }
 
     public function create(Request $request)
@@ -69,10 +70,12 @@ class RestaurantImageController extends Controller
     {
         $id=$request->restaurant_img_id;
         $data = Restaurant_image::find($id);
-        if(!$data){
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if(!$data || $data['is_delete'] === 1){
             return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
-        $data->delete();
+        //Nếu tìm thấy id chưa bị xóa thì thực hiện câu lệnh xóa mềm
+        $data->update(['is_delete' => 1]);
         return $this->responseCommon(200,"Xóa thành công",[]);
     }
 }
