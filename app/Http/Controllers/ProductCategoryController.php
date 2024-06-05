@@ -26,7 +26,7 @@ class ProductCategoryController extends Controller
             }
 
 
-            $product = ProductCategory::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber); // Nếu is_delete = false {thì sẽ in ra tất cả}, true thì sẽ ẩn đi
+            $product = ProductCategory::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);// Nếu is_delete = false {thì sẽ in ra tất cả}, true thì sẽ ẩn đi
 
             return $this->responseCommon(200, "Lấy danh sách thành công", $product);
         } catch (\Exception $e) {
@@ -42,7 +42,7 @@ class ProductCategoryController extends Controller
     public function get(Request $request)
     {
         try {
-            $product = ProductCategory::where('category_id', $request->input('category_id'))->firstOrFail();
+            $product = ProductCategory::where('category_id', $request->input('category_id'))->where('is_delete', false)->firstOrFail();
 
             return $this->responseCommon(200, "Lấy dữ liệu từ id thành công", $product);
 
