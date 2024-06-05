@@ -14,14 +14,19 @@ class ProductCategoryController extends Controller
     }
 
     //lấy all  danh  sách
-    public function list()
+    public function list(Request $request)
     {
-        // Nếu is_delete = false {thì sẽ in ra tất cả}, true thì sẽ ẩn đi
-        try {
-            $pageNumber = request()->input('page', 1);
-            $pageSize = 5;
 
-            $product = ProductCategory::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
+        try {
+            $pageNumber = request()->input('page');
+            $pageSize = request()->input('pageSize');
+
+            if ($pageSize === null) {
+                return $this->responseCommon(400, "Vui lòng truyền pageSize trong request.", []);
+            }
+
+
+            $product = ProductCategory::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber); // Nếu is_delete = false {thì sẽ in ra tất cả}, true thì sẽ ẩn đi
 
             return $this->responseCommon(200, "Lấy danh sách thành công", $product);
         } catch (\Exception $e) {
