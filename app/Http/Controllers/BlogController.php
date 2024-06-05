@@ -19,7 +19,7 @@ class BlogController extends Controller
     public function list(Request $request)
     {
         try {
-            $pageNumber = request()->input('page');
+            $pageNumber = request()->input('pageNumber');
             $pageSize = request()->input('pageSize');
 
 
@@ -30,7 +30,6 @@ class BlogController extends Controller
 
             return $this->responseCommon(400, "lấy danh sách blog không thành công", []);
         }
-
     }
 
     public function search(Request $request)
@@ -38,7 +37,7 @@ class BlogController extends Controller
 
         try {
             $searchTerm = $request->input('search');
-            $pageNumber = request()->input('page');
+            $pageNumber = request()->input('pageNumber');
             $pageSize = request()->input('pageSize');
 
             $blog = Blog::where('title', 'like', '%' . $searchTerm . '%')
