@@ -18,7 +18,7 @@ class ProductCategoryController extends Controller
     {
 
         try {
-            $pageNumber = request()->input('page');
+            $pageNumber = request()->input('pageNumber');
             $pageSize = request()->input('pageSize');
 
             if ($pageSize === null) {
