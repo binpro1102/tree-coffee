@@ -87,13 +87,13 @@ class ProductCategoryController extends Controller
                 'img' => 'required'
 
             ]);
-            $product = ProductCategory::findOrFail($request->input('category_id')); // $request->input('category_id') lấy id truyền từ body
+            $product = ProductCategory::where('category_id', $request->input('category_id'))->where('is_delete', false)->firstOrFail();
             $product->update($request->all());
 
             return $this->responseCommon(200, "Cập nhật thành công", $product);
         } catch (\Exception $e) {
 
-            return $this->responseCommon(400, "Cập nhật không thành công", null);
+            return $this->responseCommon(400, "không tìm thấy id trong cơ sở dữ liệu, cập nhật không thành công", null);
         }
 
     }
@@ -104,14 +104,16 @@ class ProductCategoryController extends Controller
 
         try {
             $product = ProductCategory::findOrFail($request->input('category_id')); // lấy product_id truyền từ body để xóa
-            $product->is_delete = true;
-            $product->save();
 
+            if (!$product->is_delete) { // kiểm tra is_delete trong bảng là F hay không, nếu là F gán là T
+                $product->is_delete = true;
+                $product->save();
 
-            return $this->responseCommon(200, "id đã được xóa thành công.", []);
-
+                return $this->responseCommon(200, "id đã được xóa thành công.", []);
+            } else {
+                return $this->responseCommon(404, "id đã được xóa trước đó", null);
+            }
         } catch (\Exception $e) {
-
             return $this->responseCommon(404, "không tìm thấy id trong cơ sở dữ liệu.", null);
         }
     }
