@@ -95,3 +95,4 @@ Route::post('productcategory/create', 'App\Http\Controllers\ProductCategoryContr
 Route::post('productcategory/update', 'App\Http\Controllers\ProductCategoryController@update');
 Route::delete('productcategory', 'App\Http\Controllers\ProductCategoryController@delete');
 
+
