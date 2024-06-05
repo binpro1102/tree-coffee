@@ -16,12 +16,12 @@ class ProductCategoryController extends Controller
     //lấy all  danh  sách
     public function list()
     {
-        // Nếu is_delete = false {thì sẽ in ra tất cả}
+        // Nếu is_delete = false {thì sẽ in ra tất cả}, true thì sẽ ẩn đi
         try {
             $pageNumber = request()->input('page', 1);
             $pageSize = 5;
 
-            $product = ProductCategory::paginate($pageSize, ['*'], 'page', $pageNumber);
+            $product = ProductCategory::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
 
             return $this->responseCommon(200, "Lấy danh sách thành công", $product);
         } catch (\Exception $e) {
@@ -99,10 +99,8 @@ class ProductCategoryController extends Controller
 
         try {
             $product = ProductCategory::findOrFail($request->input('category_id')); // lấy product_id truyền từ body để xóa
-           $product->delete();
-            // UPDATE ProductCategory
-            // SET is_delete = 'true'
-            // WHERE category_id = $product;
+            $product->is_delete = true;
+            $product->save();
 
 
             return $this->responseCommon(200, "id đã được xóa thành công.", []);
