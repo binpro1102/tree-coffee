@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Validator;
-use App\Models\User;
+use App\Models\Order_detail;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -18,6 +18,7 @@ class OrderController extends Controller
     {
         $user = auth()->user(); // Lấy ra thông tin user khi đăng nhập
         $array = [];
+        $name = $user['name'];
         if ($user['role'] == 'MEMBER') {
             $data = Order::all(); // Lấy ra danh sách order
             // Duyệt vòng lặp, để lấy ra đơn order của user
@@ -28,10 +29,9 @@ class OrderController extends Controller
             }
             // Nếu user đó không có đơn order thì trả về là không có
             if (!$array) {
-                return $this->responseCommon(200, "Bạn chưa có đơn đặt hàng nào", []);
+                return $this->responseCommon(200, "$name chưa có đơn đặt hàng nào", []);
             }
             // Nếu user có đơn order, thì trả lại tất cả đơn order của user
-            $name = $user['name'];
             return $this->responseCommon(200, "Danh sách đặt hàng của: $name", $array);
         } else {
             $pageNumber = request()->input('page', $request->pageNumber);
@@ -63,7 +63,23 @@ class OrderController extends Controller
         if (!$data) {
             return $this->responseCommon(400, "ID không tìm thấy hoặc đã bị xóa", []);
         }
-        return $this->responseCommon(200, "Tìm thấy thành công", $data);
+        // Kiểm tra xem đơn order đó bị xóa chưa
+        if($data['is_delete'] === 1){
+            return $this->responseCommon(400, "ID không tìm thấy hoặc đã bị xóa", []);
+        }
+        // Nếu đơn order vẫn còn thì tạo ra 1 mảng rỗng
+        $array = [];
+        // Truyền dữ liệu của order vào mảng
+        array_push($array, $data);
+        // Lấy ra dữ liệu order_detail của đơn order
+        $order_detail = Order_detail::all();
+        foreach($order_detail as $list){
+            if($id == $list['order_id']){
+                array_push($array, $list);
+            }
+        }
+        // Trả về order,order_detail
+        return $this->responseCommon(200, "Tìm thấy thành công", $array);
     }
 
     public function update(Request $request)
@@ -96,6 +112,13 @@ class OrderController extends Controller
         }
         //Nếu tìm thấy id chưa bị xóa thì thực hiện câu lệnh xóa mềm
         $data->update(['is_delete' => 1]);
+        // Nếu xóa đơn order thì phải xóa luôn order_detail của order đó
+        $order_detail = Order_detail::all();
+        foreach($order_detail as $list){
+            if($id == $list['order_id']){
+                $list->update(['is_delete' => 1]);
+            }
+        }
         return $this->responseCommon(200, "Xóa thành công", []);
     }
 }
