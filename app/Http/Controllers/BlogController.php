@@ -16,21 +16,20 @@ class BlogController extends Controller
         $this->middleware('auth:api');
     }
     //lấy all  danh  sách
-    public function list()
+    public function list(Request $request)
     {
         try {
-            $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
-            $pageSize = 3;
+            $pageNumber = request()->input('pageNumber');
+            $pageSize = request()->input('pageSize');
 
-            $blog = Blog::paginate($pageSize, ['*'], 'page', $pageNumber);
+
+            $blog = Blog::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
 
             return $this->responseCommon(200, "Lấy danh sách blog thành công", $blog);
         } catch (\Exception $e) {
 
             return $this->responseCommon(400, "lấy danh sách blog không thành công", []);
         }
-
-
     }
 
     public function search(Request $request)
@@ -38,8 +37,8 @@ class BlogController extends Controller
 
         try {
             $searchTerm = $request->input('search');
-            $pageNumber = request()->input('page', 1); // lấy trang hiện tại từ url, bắt đầu từ 1
-            $pageSize = 3; // bản ghi 1 trang
+            $pageNumber = request()->input('pageNumber');
+            $pageSize = request()->input('pageSize');
 
             $blog = Blog::where('title', 'like', '%' . $searchTerm . '%')
                 ->paginate($pageSize, ['*'], 'page', $pageNumber);
@@ -57,7 +56,7 @@ class BlogController extends Controller
     public function get(Request $request)
     {
         try {
-            $blog = Blog::where('blog_id', $request->blog_id)->firstOrFail();
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->where('is_delete', false)->firstOrFail();
 
 
             return $this->responseCommon(200, "Lấy dữ liệu blog từ id thành công", $blog);
@@ -87,6 +86,7 @@ class BlogController extends Controller
             ]);
             $blog = blog::create($request->all());
 
+
             return $this->responseCommon(201, "thêm  bài viết thành công", $blog);
 
         } catch (\Exception $e) {
@@ -97,17 +97,17 @@ class BlogController extends Controller
 
     // update
 
-    public function update(Request $request, $blog_id)
+    public function update(Request $request)
     {
         try {
             $request->validate([
                 'user_id' => 'required|exists:users,id',
-                'title' => 'required|string|min:|max:255',
+                'title' => 'required|string|min:5|max:255',
                 'content' => 'required|string|min:10',
                 'thumbnail' => 'required',
                 'highlight' => 'required'
             ]);
-            $blog = Blog::findOrFail($blog_id);
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->where('is_delete', false)->firstOrFail();
             $blog->update($request->all());
 
             return $this->responseCommon(200, "Cập nhật bài viết thành công", $blog);
@@ -119,18 +119,21 @@ class BlogController extends Controller
     }
 
 
-    public function delete($blog_id)
+    public function delete(Request $request)
     {
 
         try {
-            $blog = blog::findOrFail($blog_id);
-            $blog->delete();
+            $blog = Blog::findOrFail($request->input('blog_id')); // lấy product_id truyền từ body để xóa
 
+            if (!$blog->is_delete) { // kiểm tra is_delete trong bảng là F hay không, nếu là F gán là T
+                $blog->is_delete = true;
+                $blog->save();
 
-            return $this->responseCommon(200, "Bài viết đã được xóa thành công.", []);
-
+                return $this->responseCommon(200, "id đã được xóa thành công.", []);
+            } else {
+                return $this->responseCommon(404, "id đã được xóa trước đó", null);
+            }
         } catch (\Exception $e) {
-
             return $this->responseCommon(404, "không tìm thấy id trong cơ sở dữ liệu.", null);
         }
     }
