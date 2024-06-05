@@ -25,7 +25,10 @@ class Controller extends BaseController
             'data' => $data
         ],$httpCode);
     }
-    
+    public function responseRole(){
+        $user = auth()->user();
+        return $user['role'];
+    }
     //Validate brands
     public function validateBrand()
     {
