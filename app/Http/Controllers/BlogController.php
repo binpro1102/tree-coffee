@@ -22,9 +22,6 @@ class BlogController extends Controller
             $pageNumber = request()->input('page');
             $pageSize = request()->input('pageSize');
 
-            if ($pageSize === null) {
-                return $this->responseCommon(400, "Vui lòng truyền pageSize trong request.", []);
-            }
 
             $blog = Blog::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
 
@@ -127,17 +124,17 @@ class BlogController extends Controller
     {
 
         try {
-            $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
+            $blog = Blog::findOrFail($request->input('blog_id')); // lấy product_id truyền từ body để xóa
 
-            $blog->is_delete = true; // Cập nhật cột is_delete thành true
+            if (!$blog->is_delete) { // kiểm tra is_delete trong bảng là F hay không, nếu là F gán là T
+                $blog->is_delete = true;
+                $blog->save();
 
-            $blog->save(); // Lưu lại thay đổi
-
-
-            return $this->responseCommon(200, "Bài viết đã được xóa thành công.", []);
-
+                return $this->responseCommon(200, "id đã được xóa thành công.", []);
+            } else {
+                return $this->responseCommon(404, "id đã được xóa trước đó", null);
+            }
         } catch (\Exception $e) {
-
             return $this->responseCommon(404, "không tìm thấy id trong cơ sở dữ liệu.", null);
         }
     }
