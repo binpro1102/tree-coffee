@@ -20,16 +20,15 @@ class BlogController extends Controller
     {
         try {
             $pageNumber = $request->input('page'); // truyền page từ body { "page": 2}
-            $pageSize = 3;
+            $pageSize = 10;
 
-            $blog = Blog::paginate($pageSize, ['*'], 'page', $pageNumber);
+            $blog = Blog::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
 
             return $this->responseCommon(200, "Lấy danh sách blog thành công", $blog);
         } catch (\Exception $e) {
 
             return $this->responseCommon(400, "lấy danh sách blog không thành công", []);
         }
-
 
     }
 
@@ -125,7 +124,10 @@ class BlogController extends Controller
 
         try {
             $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
-            $blog->delete();
+
+            $blog->is_delete = true; // Cập nhật cột is_delete thành true
+
+            $blog->save(); // Lưu lại thay đổi
 
 
             return $this->responseCommon(200, "Bài viết đã được xóa thành công.", []);
