@@ -15,6 +15,7 @@ class blog extends Model
         'content',
         'thumbnail',
         'highlight',
+        'is_delete'
     ];
     protected $primaryKey = 'blog_id';
 }

@@ -51,10 +51,6 @@ Route::put('brand', [BrandController::class, 'update']);
 Route::delete('brand', [BrandController::class, 'destroy']);
 
 
-
-
-
-
 // // CRUD table restaurant
 Route::get('restaurant-list', [RestaurantController::class, 'restaurantList']);
 Route::post('restaurant', [RestaurantController::class, 'create']);
@@ -91,6 +87,14 @@ Route::post('product/create', 'App\Http\Controllers\ProductController@store');
 Route::post('product/update', 'App\Http\Controllers\ProductController@update');
 Route::delete('product', 'App\Http\Controllers\ProductController@delete');
 
+// CRUD table product category
+Route::get('productcategory/list', 'App\Http\Controllers\ProductCategoryController@list');
+Route::get('productcategory/search', 'App\Http\Controllers\ProductCategoryController@search');
+Route::get('productcategory', 'App\Http\Controllers\ProductCategoryController@get');
+Route::post('productcategory/create', 'App\Http\Controllers\ProductCategoryController@store');
+Route::post('productcategory/update', 'App\Http\Controllers\ProductCategoryController@update');
+Route::delete('productcategory', 'App\Http\Controllers\ProductCategoryController@delete');
+
 // CRUD table blog
 Route::get('blog/list', 'App\Http\Controllers\BlogController@list');
 Route::get('blog/search', 'App\Http\Controllers\BlogController@search');
@@ -98,4 +102,3 @@ Route::get('blog', 'App\Http\Controllers\BlogController@get');
 Route::post('blog/create', 'App\Http\Controllers\BlogController@store');
 Route::post('blog/update', 'App\Http\Controllers\BlogController@update');
 Route::delete('blog', 'App\Http\Controllers\BlogController@delete');
-
