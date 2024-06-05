@@ -19,8 +19,12 @@ class BlogController extends Controller
     public function list(Request $request)
     {
         try {
-            $pageNumber = $request->input('page'); // truyền page từ body { "page": 2}
-            $pageSize = 10;
+            $pageNumber = request()->input('page');
+            $pageSize = request()->input('pageSize');
+
+            if ($pageSize === null) {
+                return $this->responseCommon(400, "Vui lòng truyền pageSize trong request.", []);
+            }
 
             $blog = Blog::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
 
