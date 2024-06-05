@@ -36,8 +36,9 @@ class RestaurantImageController extends Controller
     {
         $id=$request->restaurant_img_id;
         $data = Restaurant_image::find($id);
-        if(!$data){
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         return $this->responseCommon(200,"Tìm thấy ID thành công",$data);
     }
@@ -47,9 +48,9 @@ class RestaurantImageController extends Controller
     {
         $id=$request->restaurant_img_id;
         $data = Restaurant_image::find($id);
-        if(!$data){
-            // Nếu không tồn tại thì trả lỗi
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validateRestaurantImage();    // Kiểm tra validate
         $alert = $this->alert();                      // Nếu có lỗi thì thông báo

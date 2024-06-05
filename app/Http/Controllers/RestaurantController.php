@@ -39,8 +39,9 @@ class RestaurantController extends Controller
     {
         $id=$request->restaurant_id;
         $data = Restaurant::find($id);
-        if(!$data){
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         return $this->responseCommon(200,"Tìm thấy ID thành công",$data);
     }
@@ -49,9 +50,9 @@ class RestaurantController extends Controller
     {
         $id=$request->restaurant_id;
         $data = Restaurant::find($id);
-        if (!$data) {
-            // Nếu không tồn tại thì trả lỗi
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validateRestaurant();    // Kiểm tra validate
         $alert = $this->alert();            // Nếu có lỗi thì thông báo

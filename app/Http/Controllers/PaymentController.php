@@ -55,7 +55,8 @@ class PaymentController extends Controller
     {
         $id = $request->payment_method_id;
         $data = Payment_method::find($id);
-        if (!$data) {
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
             return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         return $this->responseCommon(200, "Tìm thấy ID thành công", $data);
@@ -65,7 +66,8 @@ class PaymentController extends Controller
     {
         $id = $request->payment_method_id;
         $data = Payment_method::find($id);
-        if (!$data) {
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
             return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validatePayment();// Kiểm tra validate

@@ -38,7 +38,8 @@ class OrderDetailController extends Controller
     {
         $id = $request->order_detail_id;
         $data = Order_detail::find($id);
-        if (!$data) {
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
             return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         return $this->responseCommon(200, "Tìm thấy ID thành công", $data);
@@ -47,9 +48,9 @@ class OrderDetailController extends Controller
     public function update(Request $request){
         $id=$request->order_id;
         $data = Order_detail::find($id);
-        if(!$data){
-            // Nếu không tồn tại thì trả lỗi
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validateOrderDetail();    
         $alert = $this->alert();                      

@@ -41,7 +41,8 @@ class BrandController extends Controller
     {
         $id = $request->id;
         $data = Brand::find($id);
-        if (!$data) {
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
             return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         return $this->responseCommon(200, "Tìm thấy ID thành công", $data);
@@ -52,8 +53,8 @@ class BrandController extends Controller
         // Tìm ID xem trong database có tồn tại không
         $id = $request->id;
         $data = Brand::find($id);
-        if (!$data) {
-            // Nếu không tồn tại thì trả lỗi
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
             return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validateBrand();    // Kiểm tra validate

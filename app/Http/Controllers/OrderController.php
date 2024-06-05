@@ -60,12 +60,9 @@ class OrderController extends Controller
     {
         $id = $request->order_id;
         $data = Order::find($id);
-        if (!$data) {
-            return $this->responseCommon(400, "ID không tìm thấy hoặc đã bị xóa", []);
-        }
-        // Kiểm tra xem đơn order đó bị xóa chưa
-        if($data['is_delete'] === 1){
-            return $this->responseCommon(400, "ID không tìm thấy hoặc đã bị xóa", []);
+        // Nếu id không tồn tại, và is_delete = 1 thì trả về lỗi
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         // Nếu đơn order vẫn còn thì tạo ra 1 mảng rỗng
         $array = [];
@@ -78,7 +75,7 @@ class OrderController extends Controller
                 array_push($array, $list);
             }
         }
-        // Trả về order,order_detail
+        // Nếu đơn order đó có tồn ta
         return $this->responseCommon(200, "Tìm thấy thành công", $array);
     }
 
@@ -86,8 +83,8 @@ class OrderController extends Controller
     {
         $id = $request->order_id;
         $data = Order::find($id);
-        if (!$data) {
-            // Nếu không tồn tại thì trả lỗi
+        // Nếu id không tồn tại, và is_delete = 1 thì trả về lỗi
+        if (!$data || $data['is_delete'] === 1) {
             return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validateOrder();
