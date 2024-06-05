@@ -41,8 +41,8 @@ class BlogController extends Controller
 
         try {
             $searchTerm = $request->input('search');
-            $pageNumber = request()->input('page', 1); // lấy trang hiện tại từ url, bắt đầu từ 1
-            $pageSize = 3; // bản ghi 1 trang
+            $pageNumber = request()->input('page');
+            $pageSize = request()->input('pageSize');
 
             $blog = Blog::where('title', 'like', '%' . $searchTerm . '%')
                 ->paginate($pageSize, ['*'], 'page', $pageNumber);
@@ -60,7 +60,7 @@ class BlogController extends Controller
     public function get(Request $request)
     {
         try {
-            $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->where('is_delete', false)->firstOrFail();
 
 
             return $this->responseCommon(200, "Lấy dữ liệu blog từ id thành công", $blog);
@@ -111,7 +111,7 @@ class BlogController extends Controller
                 'thumbnail' => 'required',
                 'highlight' => 'required'
             ]);
-            $blog = Blog::where('blog_id', $request->input('blog_id'))->firstOrFail();
+            $blog = Blog::where('blog_id', $request->input('blog_id'))->where('is_delete', false)->firstOrFail();
             $blog->update($request->all());
 
             return $this->responseCommon(200, "Cập nhật bài viết thành công", $blog);
