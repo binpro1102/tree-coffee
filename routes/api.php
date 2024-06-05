@@ -95,4 +95,10 @@ Route::post('productcategory/create', 'App\Http\Controllers\ProductCategoryContr
 Route::post('productcategory/update', 'App\Http\Controllers\ProductCategoryController@update');
 Route::delete('productcategory', 'App\Http\Controllers\ProductCategoryController@delete');
 
-
+// CRUD table blog
+Route::get('blog/list', 'App\Http\Controllers\BlogController@list');
+Route::get('blog/search', 'App\Http\Controllers\BlogController@search');
+Route::get('blog', 'App\Http\Controllers\BlogController@get');
+Route::post('blog/create', 'App\Http\Controllers\BlogController@store');
+Route::post('blog/update', 'App\Http\Controllers\BlogController@update');
+Route::delete('blog', 'App\Http\Controllers\BlogController@delete');
