@@ -14,13 +14,17 @@ class ProductController extends Controller
     }
 
     //lấy all  danh  sách
-    public function list()
+    public function list(Request $request)
     {
         try {
-            $pageNumber = request()->input('page', 1);
-            $pageSize = 5;
+            $pageNumber = request()->input('page');
+            $pageSize = request()->input('pageSize');
 
-            $product = Product::paginate($pageSize, ['*'], 'page', $pageNumber);
+            if ($pageSize === null) {
+                return $this->responseCommon(400, "Vui lòng truyền pageSize trong request.", []);
+            }
+
+            $product = Product::where('is_delete', false)->paginate($pageSize, ['*'], 'page', $pageNumber);
 
             return $this->responseCommon(200, "Lấy danh sách sản phẩm thành công", $product);
         } catch (\Exception $e) {
@@ -126,7 +130,8 @@ class ProductController extends Controller
 
         try {
             $product = Product::findOrFail($request->input('product_id')); // lấy product_id truyền từ body để xóa
-            $product->delete();
+            $product->is_delete = true;
+            $product->save();
 
 
             return $this->responseCommon(200, "sản phẩm đã được xóa thành công.", []);
