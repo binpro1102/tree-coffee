@@ -59,7 +59,6 @@ class Controller extends BaseController
     public function validateOrder()
     {
         return [
-        'user_id' => 'required',
         'order_date' => 'required',
         'total_price' => 'required',
         'shipping_address' => 'required',
