@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function list(Request $request)
     {
         try {
-            $pageNumber = request()->input('page');
+            $pageNumber = request()->input('pageNumber');
             $pageSize = request()->input('pageSize');
 
             if ($pageSize === null) {
@@ -41,8 +41,8 @@ class ProductController extends Controller
 
         try {
             $searchTerm = $request->input('search');
-            $pageNumber = request()->input('page', 1);
-            $pageSize = 3; // bản ghi 1 trang
+            $pageNumber = request()->input('pageNumber');
+            $pageSize = request()->input('pageSize');
 
             $product = Product::where('name', 'like', '%' . $searchTerm . '%')
                 ->paginate($pageSize, ['*'], 'page', $pageNumber);
