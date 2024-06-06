@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Validator;
-use App\Models\Order_detail;
 use App\Models\Order;
+use App\Models\Order_detail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -16,42 +17,45 @@ class OrderController extends Controller
 
     public function orderList(Request $request)
     {
-        $user = auth()->user(); // Lấy ra thông tin user khi đăng nhập
-        $array = [];
-        $name = $user['name'];
-        if ($user['role'] == 'MEMBER') {
-            $data = Order::all(); // Lấy ra danh sách order
-            // Duyệt vòng lặp, để lấy ra đơn order của user
-            foreach ($data as $dataList) {
-                if ($user['id'] == $dataList['user_id'] && $dataList['is_delete'] === 0) {
-                    array_push($array, $dataList);
-                }
-            }
-            // Nếu user đó không có đơn order thì trả về là không có
-            if (!$array) {
-                return $this->responseCommon(200, "$name chưa có đơn đặt hàng nào", []);
-            }
-            // Nếu user có đơn order, thì trả lại tất cả đơn order của user
-            return $this->responseCommon(200, "Danh sách đặt hàng của: $name", $array);
+        $query = $this->responseQueryOrder();
+        $pageNumber = request()->input('pageNumber', $request->pageNumber);
+        $pageSize = $request->pageSize;
+        $user = $this->responseRole();
+        if ($user['role'] === 'MEMBER') {
+            $data = $query->where('orders.user_id', '=', $user['id'])
+                ->paginate($pageSize, ['*'], 'pageNumber', $pageNumber);
+            return $this->responseCommon(200, "Lấy danh sách thành công", $data);
         } else {
-            $pageNumber = request()->input('page', $request->pageNumber);
-            $pageSize = $request->pageSize;
-            $data = Order::where('is_delete', '=', 0)
-                ->paginate($pageSize, ['*'], 'page', $pageNumber);
+            $data = $query->paginate($pageSize, ['*'], 'page', $pageNumber);
             return $this->responseCommon(200, "Lấy danh sách thành công", $data);
         }
     }
 
     public function create(Request $request)
     {
+        $status = $request->status;
+        if (is_null($status)) {
+            $status = "pending";
+        }
         $rules = $this->validateOrder();
         $alert = $this->alert();
         $validator = Validator::make($request->all(), $rules, $alert);
         if ($validator->fails()) {
             return $validator->errors();
         } else {
-            // Nếu không thì trả lại dữ liệu cho người dùng đã thêm
-            $data = Order::create($request->all());
+            // Nếu điền đầy đủ thì trả lại dữ liệu cho người dùng đã thêm
+            $data = Order::create([
+                'user_id' => $request->user_id,
+                'payment_method_id' => $request->payment_method_id,
+                'restaurant_id' => $request->restaurant_id,
+                'order_date' => $request->order_date,
+                'total_price' => $request->total_price,
+                'shipping_address' => $request->shipping_address,
+                'note' => $request->note,
+                'total_discount' => $request->total_discount,
+                'sub_total' => $request->sub_total,
+                'status' => $status
+            ]);
             return $this->responseCommon(200, "Thêm đơn order thành công", $data);
         }
     }
@@ -59,61 +63,68 @@ class OrderController extends Controller
     public function show(Request $request)
     {
         $id = $request->order_id;
-        $data = Order::find($id);
-        $array = [];
-        // Nếu id không tồn tại, và is_delete = 1 thì trả về lỗi
-        if (!$data || $data['is_delete'] === 1) {
-            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
-        }
-        $user = auth()->user(); // Lấy ra thông tin user khi đăng nhập
-        if ($user['role'] == 'MEMBER') {
-            if ($user['id'] == $data['user_id']) {
-                array_push($array,$data);
-                $order_detail = Order_detail::all();
-                foreach ($order_detail as $list) {
-                    if ($user['id'] == $list['order_id']) {
-                        array_push($array, $list);
-                    }
-                }
-                return $this->responseCommon(200, "Tìm thấy thành công", $array);
-            } else {
-                return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
+        $user = $this->responseRole();
+
+        //Câu lệnh truy vấn order
+        $query = $this->responseQueryOrder();
+        // Viết câu lệnh truy vấn lấy order_detail
+        $order_detail = Order_detail::select('products.name as product_name','order_details.price','quantity','discount','order_details.created_at','order_details.updated_at')
+            ->join('products', 'products.product_id', '=', 'order_details.product_id')
+            ->where('order_details.order_id','=',$id)
+            ->get();
+        // End câu lệnh truy vấn order_detail
+        //End câu lệnh truy vấn    
+        
+        if ($user['role'] === 'MEMBER') {
+            $data = $query->where('orders.user_id', '=', $user['id'])->find($id);
+            if (!$data) {
+                return $this->responseCommon(400, "Đơn order không tồn tại hoặc đã bị xóa", []);
             }
+            $data["order_details"] = $order_detail;
+            return $this->responseCommon(200, "Lấy đơn order thành công", $data);
         } else {
-            array_push($array,$data);
-            $order_detail = Order_detail::all();
-            foreach ($order_detail as $list) {
-                if ($data['order_id'] == $list['order_id']) {
-                    array_push($array, $list);
-                }
+            $data = $query->find($id);
+            if(!$data){
+                return $this->responseCommon(400, "Đơn order không tồn tại hoặc đã bị xóa",[]);
             }
-            return $this->responseCommon(200, "Tìm thấy thành công", $array);
+            $data["order_details"] = $order_detail;
+            return $this->responseCommon(200, "Lấy đơn order thành công", $data);
         }
     }
 
     public function update(Request $request)
     {
         $id = $request->order_id;
-        $data = Order::find($id);
-        // Nếu id không tồn tại, và is_delete = 1 thì trả về lỗi
-        if (!$data || $data['is_delete'] === 1) {
-            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
-        }
+        $user = $this->responseRole(); // Lấy ra thông tin user
+        $query = $this->responseQueryOrder(); // Lấy ra câu lệnh truy vấn
         $rules = $this->validateOrder();
         $alert = $this->alert();
         $validator = Validator::make($request->all(), $rules, $alert);
         if ($validator->fails()) {
             return $validator->errors();
         } else {
-            $user = auth()->user(); // Lấy ra thông tin user khi đăng nhập
-            if ($user['role'] == 'MEMBER') {
-                if ($user['id'] === $data['user_id']) {
+            if($user['role'] === 'MEMBER'){
+                $data = $query->where('orders.user_id', '=', $user['id'])->find($id);
+                // Nếu ID không tồn tại thì trả về lỗi
+                if(!$data){
+                    return $this->responseCommon(400, "Đơn order này không tồn tại hoặc đã bị xóa",[]);
+                }
+                // Nếu ID tồn tại thì tiếp tục kiểm tra status
+                if($data['status'] === 'pending'){
                     $data->update($request->all());
                     return $this->responseCommon(200, "Cập nhật thành công", $data);
-                } else {
-                    return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
                 }
-            } else {
+                if($data['status'] === 'processing'){
+                    return $this->responseCommon(400, "Đơn của bạn hiện tại đang được xử lý,vui lòng liên lạc tới cửa hàng nếu muốn thay đổi đơn hàng",[]);
+                }else{
+                    return $this->responseCommon(400, "Đơn của bạn đã được xử lý,không thể sửa",[]);
+                }
+            }else{
+                $data = $query->find($id);
+                // Nếu ID không tồn tại thì trả về lỗi
+                if(!$data){
+                    return $this->responseCommon(400, "Đơn order này không tồn tại hoặc đã bị xóa",[]);
+                }
                 $data->update($request->all());
                 return $this->responseCommon(200, "Cập nhật thành công", $data);
             }
@@ -123,37 +134,40 @@ class OrderController extends Controller
     public function destroy(Request $request)
     {
         $id = $request->order_id;
-        $data = Order::find($id);
-        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
-        if (!$data || $data['is_delete'] === 1) {
-            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
-        }
-        $user = auth()->user(); // Lấy ra thông tin user khi đăng nhập
-        if ($user['role'] == 'MEMBER') {
-            if ($user['id'] == $data['user_id']) {
-                //Nếu tìm thấy id chưa bị xóa thì thực hiện câu lệnh xóa mềm
+        $user = $this->responseRole(); // Lấy ra thông tin user
+        $query = $this->responseQueryOrder(); // Lấy ra câu lệnh truy vấn
+
+        // Viết câu lệnh truy vấn order_detail
+        $order_detail = Order_detail::where('order_details.order_id','=',$id);
+
+        if($user['role'] === 'MEMBER'){
+            $data = $query->where('orders.user_id', '=', $user['id'])->find($id);
+            // Nếu ID không tồn tại thì trả về lỗi
+            if(!$data){
+                return $this->responseCommon(400, "Đơn order này không tồn tại hoặc đã bị xóa",[]);
+            }
+            // Nếu ID tồn tại thì tiếp tục kiểm tra status
+            if($data['status'] === 'pending'){
                 $data->update(['is_delete' => 1]);
-                // Nếu xóa đơn order thì phải xóa luôn order_detail của order đó
-                $order_detail = Order_detail::all();
-                foreach ($order_detail as $list) {
-                    if ($id == $list['order_id']) {
-                        $list->update(['is_delete' => 1]);
-                    }
-                }
-                return $this->responseCommon(200, "Xóa thành công", []);
-            } else {
-                return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
+                // Nếu hủy(xóa) order thì phải xóa luôn order_detail của order đó
+                $order_detail->update(['is_delete' => 1]);
+                return $this->responseCommon(200, "Đơn của bạn đã được hủy", []);
             }
-        } else {
+            if($data['status'] === 'processing'){
+                return $this->responseCommon(400, "Đơn của bạn hiện tại đang được xử lý,vui lòng liên lạc tới cửa hàng nếu muốn thay đổi đơn hàng",[]);
+            }else{
+                return $this->responseCommon(400, "Đơn của bạn đã được xử lý,không thể xóa",[]);
+            }
+        }else{
+            $data = $query->find($id);
+            // Nếu ID không tồn tại thì trả về lỗi
+            if(!$data){
+                return $this->responseCommon(400, "Đơn order này không tồn tại hoặc đã bị xóa",[]);
+            }
             $data->update(['is_delete' => 1]);
-            // Nếu xóa đơn order thì phải xóa luôn order_detail của order đó
-            $order_detail = Order_detail::all();
-            foreach ($order_detail as $list) {
-                if ($id == $list['order_id']) {
-                    $list->update(['is_delete' => 1]);
-                }
-            }
-            return $this->responseCommon(200, "Xóa thành công", []);
+            // Nếu hủy(xóa) order thì phải xóa luôn order_detail của order đó
+            $order_detail->update(['is_delete' => 1]);
+            return $this->responseCommon(200, "Xóa thành công",[]);
         }
     }
 }
