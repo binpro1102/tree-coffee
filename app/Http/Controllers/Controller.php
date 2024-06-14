@@ -31,17 +31,6 @@ class Controller extends BaseController
         return $user;
     }
 
-    public function responseQueryOrder(){
-        // Viết câu lệnh truy vấn lấy ra list order
-        $query = Order::select('order_id','users.name','order_date','total_price','shipping_address','note','total_discount','sub_total','orders.status','orders.created_at','orders.updated_at','payment_methods.name as payment','restaurants.name as restaurant')
-            ->join('users', 'users.id', '=', 'orders.user_id')
-            ->join('payment_methods', 'payment_methods.payment_method_id', '=', 'orders.payment_method_id')
-            ->join('restaurants','restaurants.restaurant_id','=','orders.restaurant_id')
-            ->where('orders.is_delete','=',0);
-        // End câu lệnh truy vấn order
-        return $query;
-    }
-
     //Validate brands
     public function validateBrand()
     {

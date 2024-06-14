@@ -6,13 +6,26 @@ use Validator;
 use App\Models\Order;
 use App\Models\Order_detail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth:api');
+    }
+
+    public function responseQueryOrder(){
+        // Viết câu lệnh truy vấn lấy ra list order
+        $query = Order::select('orders.order_id','users.id as user_id','users.name','order_date','shipping_address','note',Order::raw('SUM((products.price - discount) * quantity) sub_total'),'total_discount',Order::raw('SUM((products.price - discount)*quantity)-total_discount total_price'),'orders.status','orders.created_at','orders.updated_at','payment_methods.name as payment','restaurants.name as restaurant')
+            ->groupBy('order_id')
+            ->join('order_details','order_details.order_id','=','orders.order_id')
+            ->join('users', 'users.id', '=', 'orders.user_id')
+            ->join('products', 'products.product_id', '=', 'order_details.product_id')
+            ->join('payment_methods', 'payment_methods.payment_method_id', '=', 'orders.payment_method_id')
+            ->join('restaurants','restaurants.restaurant_id','=','orders.restaurant_id')
+            ->where('orders.is_delete','=',0);
+        // End câu lệnh truy vấn order
+        return $query;
     }
 
     public function orderList(Request $request)
@@ -26,7 +39,7 @@ class OrderController extends Controller
                 ->paginate($pageSize, ['*'], 'pageNumber', $pageNumber);
             return $this->responseCommon(200, "Lấy danh sách thành công", $data);
         } else {
-            $data = $query->paginate($pageSize, ['*'], 'page', $pageNumber);
+            $data = $query->paginate($pageSize, ['*'], 'pageNumber', $pageNumber);
             return $this->responseCommon(200, "Lấy danh sách thành công", $data);
         }
     }
@@ -68,7 +81,7 @@ class OrderController extends Controller
         //Câu lệnh truy vấn order
         $query = $this->responseQueryOrder();
         // Viết câu lệnh truy vấn lấy order_detail
-        $order_detail = Order_detail::select('products.name as product_name','order_details.price','quantity','discount','order_details.created_at','order_details.updated_at')
+        $order_detail = Order_detail::select('products.name as product_name','products.price','quantity','discount','order_details.created_at','order_details.updated_at')
             ->join('products', 'products.product_id', '=', 'order_details.product_id')
             ->where('order_details.order_id','=',$id)
             ->get();
