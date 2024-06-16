@@ -18,7 +18,8 @@ class Order extends Model
         'note',
         'total_discount',
         'sub_total',
-        'status'
+        'status',
+        'is_delete'
     ];
     protected $primaryKey = "order_id";
 }

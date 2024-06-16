@@ -12,12 +12,13 @@ class RestaurantController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function restaurantList()
+    public function restaurantList(Request $request)
     {
-        $pageNumber = request()->input('page', 1); // Lấy trang hiện tại từ URL
-        $pageSize = 5;                              // Số bản ghi trên mỗi trang
-        $data = Restaurant::paginate($pageSize, ['*'], 'page', $pageNumber);
-        return $this->responseCommon(200,"Lấy danh sách thành công",$data);
+        $pageNumber = request()->input('page', $request->pageNumber);
+        $pageSize = $request->pageSize;                              
+        $data = Restaurant::where('is_delete', '=', 0)
+        ->paginate($pageSize, ['*'], 'page', $pageNumber);
+        return $this->responseCommon(200, "Lấy danh sách thành công", $data);
     }
 
     public function create(Request $request)
@@ -38,8 +39,9 @@ class RestaurantController extends Controller
     {
         $id=$request->restaurant_id;
         $data = Restaurant::find($id);
-        if(!$data){
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         return $this->responseCommon(200,"Tìm thấy ID thành công",$data);
     }
@@ -48,9 +50,9 @@ class RestaurantController extends Controller
     {
         $id=$request->restaurant_id;
         $data = Restaurant::find($id);
-        if (!$data) {
-            // Nếu không tồn tại thì trả lỗi
-            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if (!$data || $data['is_delete'] === 1) {
+            return $this->responseCommon(400, "Không tìm thấy ID hoặc đã bị xóa", []);
         }
         $rules = $this->validateRestaurant();    // Kiểm tra validate
         $alert = $this->alert();            // Nếu có lỗi thì thông báo
@@ -68,10 +70,12 @@ class RestaurantController extends Controller
     {
         $id=$request->restaurant_id;
         $data = Restaurant::find($id);
-        if(!$data){
-            return $this->responseCommonFailed(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
+        // Nếu không tìm thấy id hoặc tìm thấy id nhưng đã bị xóa
+        if(!$data || $data['is_delete'] === 1){
+            return $this->responseCommon(400,"Không tìm thấy ID hoặc đã bị xóa",[]);
         }
-        $data->delete();
+        //Nếu tìm thấy id chưa bị xóa thì thực hiện câu lệnh xóa mềm
+        $data->update(['is_delete' => 1]);
         return $this->responseCommon(200,"Xóa thành công",[]);
     }
 }

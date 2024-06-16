@@ -11,7 +11,8 @@ class Restaurant_image extends Model
     protected $fillable = [
         'restaurant_id',
         'img_path',
-        'highlight'
+        'highlight',
+        'is_delete'
     ];
 
     protected $primaryKey = "restaurant_img_id";

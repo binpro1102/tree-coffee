@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Restaurant extends Model
+class Order_detail extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'name',
-        'address',
-        'phone_number',
-        'latitude',
-        'longitude',
+        'product_id',
+        'order_id',
+        'price',
+        'quantity',
+        'discount',
         'is_delete'
     ];
-    protected $primaryKey = "restaurant_id";
+    protected $primaryKey = "order_detail_id";
 }

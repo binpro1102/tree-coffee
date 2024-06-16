@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 
+use App\Models\Order;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -25,7 +26,11 @@ class Controller extends BaseController
             'data' => $data
         ],$httpCode);
     }
-    
+    public function responseRole(){
+        $user = auth()->user();
+        return $user;
+    }
+
     //Validate brands
     public function validateBrand()
     {
@@ -59,17 +64,29 @@ class Controller extends BaseController
     public function validateOrder()
     {
         return [
-        'user_id' => 'required',
         'order_date' => 'required',
         'total_price' => 'required',
         'shipping_address' => 'required',
         'note' => 'required',
         'total_discount' => 'required',
         'sub_total' => 'required',
-        'status'=> 'required'
         ];
     }
 
+    public function validatePayment()
+    {
+        return [
+        'name' => 'required|min:5|max:30'
+        ];
+    }
+
+    public function validateOrderDetail(){
+        return [
+            'price' => 'required',
+            'quantity' => 'required',
+            'discount' => 'required'
+        ];
+    }
     public function alert()
     {
         return [
